@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Professional 3D Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body, html {
+        body, html{
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            height: 100vh;
+            overflow: auto;
             font-family: Arial, sans-serif;
         }
         #editor-container {
@@ -19,7 +20,8 @@
             height: 100%;
         }
         #sidebar {
-            width: 300px;
+            overflow-x: hidden;
+            max-width: 230px;
             background-color: #2c3e50;
             color: #ecf0f1;
             padding: 10px;
@@ -27,6 +29,7 @@
         }
         #renderCanvas {
             flex-grow: 1;
+            width: 80%;
         }
         .tool-section {
             margin-bottom: 20px;
@@ -102,6 +105,41 @@
             -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
             animation: fadein 0.5s, fadeout 0.5s 2.5s;
         }
+
+
+        .modal{
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content{
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 2rem;
+            width: 80%;
+            overflow-y: auto;
+            max-width: 1000px;
+        }
+
+        .close{
+            color: #aaa;
+            float: right;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus{
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
         @-webkit-keyframes fadein {
             from {bottom: 0; opacity: 0;}
             to {bottom: 30px; opacity: 1;}
@@ -127,6 +165,7 @@
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
     <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    
 </head>
 <body>
     <div id="editor-container">
@@ -151,7 +190,31 @@
                     <option value="standard">Standard</option>
                     <option value="pbr">PBR</option>
                     <option value="glass">Glass</option>
+                    <option value="glass1">Glass1</option>
                     <option value="fire">Fire</option>
+                    <option value="lava">Lava</option>
+                    <option value="wood">Wood</option>
+                    <option value="grass">Grass</option>
+                    <option value="metal">Metal</option>
+                    <option value="rock">Rock</option>
+                    <option value="water">Water</option>
+                    <option value="water1">Water1</option>
+                    <option value="water2">Water2</option>
+                    <option value="snow">Snow</option>
+                    <option value="leather">Leather</option>
+                    <option value="fabric">Fabric</option>
+                    <option value="cartoon">Cartoon</option>
+                    <option value="marble">Marble</option>
+                    <option value="holographic">Holographic</option>
+                    <option value="galaxy">Galaxy</option>
+                    <option value="woodGrain">WoodGrain</option>
+                    <option value="polishedMetal">PolishedMetal</option>
+                    <option value="oil">Oil</option>
+                    <option value="wool">Wool</option>
+                    <option value="chocolate">Chocolate</option>
+                    <option value="cream">Cream</option>
+                    <option value="terrain">Terrain</option>
+                    <option value="crystal">crystal</option>
                 </select>
                 <input type="color" id="material-color" value="#ffffff">
                 <input type="range" id="material-roughness" min="0" max="1" step="0.01" value="0.5">
@@ -167,6 +230,13 @@
                     <option value="fur">Fur</option>
                 </select>
                 <button id="apply-advanced-material">Apply</button>
+            </div>
+            <div class="tool-section">
+                <h3>Transform</h3>
+                <button id="translate-mode">Translate</button>
+                <button id="rotate-mode">Rotate</button>
+                <button id="scale-mode">Scale</button>
+                <button id="local-transform-mode">Local Transform</button>
             </div>
             <div class="tool-section">
                 <h3>Lighting</h3>
@@ -212,16 +282,27 @@
         </div>
         <canvas id="renderCanvas"></canvas>
     </div>
+    
     <div id="toolbar">
         <button id="undo">Undo</button>
         <button id="redo">Redo</button>
         <button id="duplicate">Duplicate</button>
         <button id="delete">Delete</button>
+        <button id="sketchfab" class="sketchfab"><i class="fas fa-cube"></i></button>
     </div>
     <div id="snackbar"></div>
 
+    <div class="modal" id="myModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>Hello word</h1>
+            <div id="sketchfab-iframe-container" style="width: 100%;
+             height: 500px;"></div>
+        </div>
+    </div>
+
+    <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+    
     <script src="script.js"></script>
 </body>
 </html>
-
-
