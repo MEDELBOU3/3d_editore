@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Professional 3D Editor</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #editor-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        #sidebar {
+            width: 300px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        #renderCanvas {
+            flex-grow: 1;
+        }
+        .tool-section {
+            margin-bottom: 20px;
+        }
+        .tool-section h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 5px;
+        }
+        button {
+            background-color: #3498db;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        input[type="color"], input[type="range"], select {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        #object-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #object-list li {
+            cursor: pointer;
+            padding: 5px;
+            transition: background-color 0.3s;
+        }
+        #object-list li:hover {
+            background-color: #34495e;
+        }
+        #properties-panel {
+            margin-top: 20px;
+        }
+        .property-input {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .property-input input {
+            width: 60%;
+        }
+        #toolbar {
+            position: absolute;
+            top: 10px;
+            left: 310px;
+            background-color: rgba(44, 62, 80, 0.7);
+            padding: 5px;
+            border-radius: 5px;
+        }
+        #snackbar {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+        }
+        #snackbar.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+</head>
+<body>
+    <div id="editor-container">
+        <div id="sidebar">
+            <div class="tool-section">
+                <h3>Add Objects</h3>
+                <button id="add-cube">Cube</button>
+                <button id="add-sphere">Sphere</button>
+                <button id="add-cylinder">Cylinder</button>
+                <button id="add-plane">Plane</button>
+                <button id="add-torus">Torus</button>
+            </div>
+            <div class="tool-section">
+                <h3>Transform</h3>
+                <button id="translate-mode">Translate</button>
+                <button id="rotate-mode">Rotate</button>
+                <button id="scale-mode">Scale</button>
+            </div>
+            <div class="tool-section">
+                <h3>Material</h3>
+                <select id="material-type">
+                    <option value="standard">Standard</option>
+                    <option value="pbr">PBR</option>
+                    <option value="glass">Glass</option>
+                    <option value="fire">Fire</option>
+                </select>
+                <input type="color" id="material-color" value="#ffffff">
+                <input type="range" id="material-roughness" min="0" max="1" step="0.01" value="0.5">
+                <label for="material-roughness">Roughness</label>
+                <input type="range" id="material-metallic" min="0" max="1" step="0.01" value="0">
+                <label for="material-metallic">Metallic</label>
+            </div>
+            <div class="tool-section">
+                <h3>Advanced Material</h3>
+                <select id="advanced-material-type">
+                    <option value="normal">Normal Map</option>
+                    <option value="fresnel">Fresnel</option>
+                    <option value="fur">Fur</option>
+                </select>
+                <button id="apply-advanced-material">Apply</button>
+            </div>
+            <div class="tool-section">
+                <h3>Lighting</h3>
+                <button id="add-point-light">Point Light</button>
+                <button id="add-spot-light">Spot Light</button>
+                <button id="add-directional-light">Directional Light</button>
+            </div>
+            <div class="tool-section">
+                <h3>Environment</h3>
+                <button id="change-environment">Change HDRI</button>
+                <input type="range" id="environment-intensity" min="0" max="10" step="0.1" value="1">
+                <label for="environment-intensity">Intensity</label>
+            </div>
+            <div class="tool-section">
+                <h3>Animation</h3>
+                <button id="add-rotation-animation">Add Rotation</button>
+                <button id="add-scaling-animation">Add Scaling</button>
+            </div>
+            <div class="tool-section">
+                <h3>Particle System</h3>
+                <button id="create-particle-system">Create Particles</button>
+            </div>
+            <div class="tool-section">
+                <h3>Physics</h3>
+                <button id="enable-physics">Enable Physics</button>
+                <button id="apply-impulse">Apply Impulse</button>
+            </div>
+            <div class="tool-section">
+                <h3>Post-Processing</h3>
+                <button id="toggle-bloom">Toggle Bloom</button>
+                <button id="toggle-dof">Toggle Depth of Field</button>
+            </div>
+            <div class="tool-section">
+                <h3>Import/Export</h3>
+                <input type="file" id="import-file" accept=".glb,.gltf">
+                <button id="export-gltf">Export GLTF</button>
+            </div>
+            <div class="tool-section">
+                <h3>Object List</h3>
+                <ul id="object-list"></ul>
+            </div>
+            <div id="properties-panel"></div>
+        </div>
+        <canvas id="renderCanvas"></canvas>
+    </div>
+    <div id="toolbar">
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
+        <button id="duplicate">Duplicate</button>
+        <button id="delete">Delete</button>
+    </div>
+    <div id="snackbar"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
