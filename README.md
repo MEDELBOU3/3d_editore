@@ -23,7 +23,7 @@ To get started with the 3D Modeling Editor locally:
 1. *Clone the repository*:
    ```bash
    git clone https://github.com/MEDELBOU3/3d_editore.git
-   cd 3d-modeling-editor
+   cd 3d_editore
 
 2. Open the index.html file in your preferred browser.
 
