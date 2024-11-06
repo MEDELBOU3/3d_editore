@@ -2,7 +2,7 @@
 
 A web-based 3D modeling editor built with *Babylon.js, **HTML, **CSS, and **JavaScript*. This tool allows users to create, manipulate, and refine 3D objects, making it ideal for both beginners and advanced users in 3D design.
 
-![Screenshot1](./screenshot1.jpeg)
+![Sceenshot1](./screenshot1.jpeg)
 ![Screenshot2](./screenshot2.jpeg)
 ![editor](./editor.jpeg)
 
